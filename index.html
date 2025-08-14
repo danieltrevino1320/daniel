@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Usuario</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 25px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0c58d8;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    .delete-btn {
+      background-color: #e53935;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #c62828;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Registro de Usuario</h1>
+    <form id="registroForm">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" name="nombre" required>
+
+      <label for="apellido">Apellido Paterno:</label>
+      <input type="text" id="apellido" name="apellido" required>
+
+      <label for="matricula">Matrícula:</label>
+      <input type="text" id="matricula" name="matricula" required>
+
+      <label for="correo">Correo Institucional:</label>
+      <input type="email" id="correo" name="correo" required>
+
+      <button type="submit">Registrar</button>
+    </form>
+
+    <table id="registrosTable">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Matrícula</th>
+          <th>Correo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Los registros se mostrarán aquí -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const form = document.getElementById('registroForm');
+    const tableBody = document.querySelector('#registrosTable tbody');
+
+    // Cargar registros desde localStorage al iniciar
+    let registros = JSON.parse(localStorage.getItem('registros')) || [];
+    renderizarTabla();
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombre').value.trim();
+      const apellido = document.getElementById('apellido').value.trim();
+      const matricula = document.getElementById('matricula').value.trim();
+      const correo = document.getElementById('correo').value.trim();
+
+      // Validación rápida
+      if (!nombre || !apellido || !matricula || !correo) {
+        alert("Todos los campos son obligatorios.");
+        return;
+      }
+
+      const nuevoRegistro = { nombre, apellido, matricula, correo };
+      registros.push(nuevoRegistro);
+      localStorage.setItem('registros', JSON.stringify(registros));
+
+      form.reset();
+      renderizarTabla();
+      alert("Registro guardado correctamente.");
+    });
+
+    function renderizarTabla() {
+      tableBody.innerHTML = "";
+      registros.forEach((registro, index) => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+          <td>${registro.nombre}</td>
+          <td>${registro.apellido}</td>
+          <td>${registro.matricula}</td>
+          <td>${registro.correo}</td>
+          <td><button class="delete-btn" onclick="eliminarRegistro(${index})">Eliminar</button></td>
+        `;
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function eliminarRegistro(index) {
+      if (confirm("¿Estás seguro de eliminar este registro?")) {
+        registros.splice(index, 1);
+        localStorage.setItem('registros', JSON.stringify(registros));
+        renderizarTabla();
+      }
+    }
+  </script>
+</body>
+</html>
